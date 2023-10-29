@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "travel-buddy-ionic-app": {
+      "hosting": {
+        "app": [
+          "travel-buddy-ionic-app"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "travel-buddy-ionic-app"
+  }
+}
