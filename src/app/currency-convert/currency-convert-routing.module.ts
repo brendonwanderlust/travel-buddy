@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { Tab1Page } from './tab1.page';
+import { CurrencyConvertPage as CurrencyConvert } from './currency-convert.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: Tab1Page,
-  }
+    component: CurrencyConvert,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class Tab1PageRoutingModule {}
+export class CurrencyConvertRoutingModule {}
