@@ -1,8 +1,29 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content [fullscreen]="true">
-  <ion-card>
-    <ion-card-content>
-      Here's a small text description for the card content. Nothing more,
-      nothing less.
-    </ion-card-content>
-  </ion-card>
+  <ion-list>
+    <ion-reorder-group
+      [disabled]="false"
+      (ionItemReorder)="handleReorder($any($event))"
+      ><ion-item *ngFor="let country of countries">
+        <ion-card>
+          <ion-card-header>
+            <!-- <ion-img [src]="country.flag"></ion-img> -->
+            <ion-card-title>{{ country.name }}</ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-label float-right>{{ country.currency }}</ion-label>
+          </ion-card-content>
+        </ion-card>
+        <ion-reorder slot="end"></ion-reorder>
+      </ion-item>
+      <!--  -->
+    </ion-reorder-group>
+  </ion-list>
+  <!-- // add "Add currency" button and exchange rate attributions
+  //https://www.exchangerate-api.com/docs/free -->
 </ion-content>

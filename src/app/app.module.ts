@@ -14,6 +14,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { NgModule } from '@angular/core';
 import { RouteReuseStrategy } from '@angular/router';
+import { environment } from '../environments/environment.prod';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,17 +22,7 @@ import { RouteReuseStrategy } from '@angular/router';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    provideFirebaseApp(() =>
-      initializeApp({
-        projectId: 'travel-buddy-ionic-app',
-        appId: '1:212457633291:web:5bdb77ade1a078f550390e',
-        storageBucket: 'travel-buddy-ionic-app.appspot.com',
-        apiKey: 'AIzaSyCI6QMsHj2odfPSkvAdx5Aw63Vp5_McL-M',
-        authDomain: 'travel-buddy-ionic-app.firebaseapp.com',
-        messagingSenderId: '212457633291',
-        measurementId: 'G-YQNLFFQDFY',
-      })
-    ),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideAnalytics(() => getAnalytics()),
     provideFirestore(() => getFirestore()),
