@@ -1,0 +1,36 @@
+.flag-img {
+  width: 35px;
+  margin-right: 10px;
+}
+
+.currencies-content {
+  align-self: center;
+  width: 95%;
+}
+
+.currency-code {
+  margin-right: 8px;
+}
+
+// ion-item {
+//   height: 100px;
+// }
+
+.currency-item {
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.currency-info-container {
+  display: flex;
+  flex-direction: row;
+}
+
+ion-list {
+  background-color: transparent;
+}
+
+ion-reorder-group {
+  background-color: transparent;
+}

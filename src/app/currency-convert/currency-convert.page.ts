@@ -10,14 +10,18 @@ export class CurrencyConvertPage {
   constructor() {}
 
   title = 'Convert';
-  countries = [
-    { name: 'Peru', flag: 'pe.svg', currency: 'PEN' },
-    { name: 'United States', flag: 'us.svg', currency: 'USD' },
+  currencies = [
+    { name: 'Peru', flag: 'assets/images/flags/pe.svg', currency: 'PEN' },
+    {
+      name: 'United States',
+      flag: 'assets/images/flags/us.svg',
+      currency: 'USD',
+    },
     // Add more countries as needed
   ];
 
   handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
-    this.countries = ev.detail.complete(this.countries);
+    this.currencies = ev.detail.complete(this.currencies);
     // save countries list to userSettings
   }
 }
