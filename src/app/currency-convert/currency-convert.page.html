@@ -30,11 +30,13 @@
             </ion-select>
           </div>
           <div class="currency-input-container">
-            <span class="currency-code">{{currency.currencySymbol}}</span>
             <ion-input
+              class="ion-text-end"
               type="number"
               shape="round"
               placeholder="0.00"
+              inputmode="decimal"
+              [label]="currency.currencySymbol"
               [clearOnEdit]="true"
               (ionChange)="currencyValueChanged($event)"
             ></ion-input>

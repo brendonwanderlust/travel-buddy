@@ -4,7 +4,6 @@ export interface ICurrency {
   countryName: string;
   currencySymbol: string;
   currencyName: string;
-  // flagPath: string;
 }
 
 export class Currency implements ICurrency {

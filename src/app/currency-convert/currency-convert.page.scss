@@ -71,20 +71,25 @@ ion-reorder-group {
           min-width: 0px;
         }
       }
-    }
 
-    .currency-input-container {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+      .currency-input-container {
+        margin-left: auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        // max-width: 200px;
 
-      span {
-        font-size: 20px;
-        margin-right: 0.5rem;
-      }
+        span {
+          font-size: 20px;
+          margin-right: 0.5rem;
+        }
 
-      ion-input {
-        font-size: 20px;
+        ion-input {
+          min-width: 50px;
+          max-width: 70px;
+          font-size: 20px;
+          // margin-right: 15px;
+        }
       }
     }
   }
