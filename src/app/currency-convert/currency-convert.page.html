@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title class="ion-text-center">{{ title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true" class="currencies-content">
@@ -9,10 +9,37 @@
       [disabled]="false"
       (ionItemReorder)="handleReorder($any($event))"
     >
-      <ion-item class="currency-item" *ngFor="let currency of currencies">
-        <ion-img [src]="currency.flag" class="flag-img"></ion-img>
-        <span class="currency-code">{{ currency.currency }}</span>
-        <ion-icon name="chevron-down-outline"></ion-icon>
+      <ion-item
+        *ngFor="let currency of currencies"
+        class="currency-item"
+        [color]="getColor(currency)"
+        (click)="onCurrencyClicked(currency)"
+      >
+        <div class="currency-container">
+          <div class="currency-info-container">
+            <ion-img [src]="currency.flagPath" class="flag-img"></ion-img>
+            <!-- <span class="currency-code">{{ currency.currency }}</span> -->
+            <!-- <ion-icon name="chevron-down-outline"></ion-icon> -->
+            <ion-select
+              [label]="currency.currencyCode"
+              toggleIcon="chevron-down-outline"
+            >
+              <ion-select-option value="apple">Apple</ion-select-option>
+              <ion-select-option value="banana">Banana</ion-select-option>
+              <ion-select-option value="orange">Orange</ion-select-option>
+            </ion-select>
+          </div>
+          <div class="currency-input-container">
+            <span class="currency-code">{{currency.currencySymbol}}</span>
+            <ion-input
+              type="number"
+              shape="round"
+              placeholder="0.00"
+              [clearOnEdit]="true"
+              (ionChange)="currencyValueChanged($event)"
+            ></ion-input>
+          </div>
+        </div>
         <ion-reorder slot="end"></ion-reorder>
       </ion-item>
     </ion-reorder-group>

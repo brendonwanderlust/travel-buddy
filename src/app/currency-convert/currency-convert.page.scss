@@ -1,30 +1,9 @@
-.flag-img {
-  width: 35px;
-  margin-right: 10px;
-}
+ion-toolbar {
+  height: 4rem;
 
-.currencies-content {
-  align-self: center;
-  width: 95%;
-}
-
-.currency-code {
-  margin-right: 8px;
-}
-
-// ion-item {
-//   height: 100px;
-// }
-
-.currency-item {
-  border-radius: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.currency-info-container {
-  display: flex;
-  flex-direction: row;
+  ion-title {
+    padding-top: 1rem;
+  }
 }
 
 ion-list {
@@ -33,4 +12,80 @@ ion-list {
 
 ion-reorder-group {
   background-color: transparent;
+}
+
+.currencies-content {
+  align-self: center;
+  width: 95%;
+
+  .currency-item {
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    .currency-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      .currency-info-container {
+        display: flex;
+        flex-direction: row;
+
+        .flag-img {
+          max-width: 40px;
+          margin-top: 1.8rem;
+          margin-bottom: 1.8rem;
+          margin-right: 1rem;
+        }
+
+        .currency-code {
+          margin-right: 8px;
+          font-size: larger;
+          align-self: center;
+        }
+
+        // ion-icon {
+        //   align-self: center;
+        //   font-size: 24px;
+        // }
+
+        ion-select {
+          align-self: center;
+        }
+
+        ion-select::part(label) {
+          font-size: 20px;
+          margin-right: 0px;
+        }
+
+        ion-select::part(icon) {
+          height: 24px;
+          width: 24px;
+        }
+
+        ion-select::part(text) {
+          display: none;
+          min-width: 0px;
+        }
+      }
+    }
+
+    .currency-input-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      span {
+        font-size: 20px;
+        margin-right: 0.5rem;
+      }
+
+      ion-input {
+        font-size: 20px;
+      }
+    }
+  }
 }
