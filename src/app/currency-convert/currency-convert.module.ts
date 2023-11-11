@@ -6,6 +6,7 @@ import { CurrencyConvertPage } from './currency-convert.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 import { CurrencyConvertRoutingModule } from './currency-convert-routing.module';
+import { CurrencySelectionModalComponent } from './currency-selection-modal/currency-selection-modal.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { CurrencyConvertRoutingModule } from './currency-convert-routing.module'
     ExploreContainerComponentModule,
     CurrencyConvertRoutingModule,
   ],
-  declarations: [CurrencyConvertPage],
+  declarations: [CurrencyConvertPage, CurrencySelectionModalComponent],
 })
 export class CurrencyConvertPageModule {}
