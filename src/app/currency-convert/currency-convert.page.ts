@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ItemReorderEventDetail, ModalController } from '@ionic/angular';
+import {
+  ItemReorderEventDetail,
+  ModalController,
+  InputChangeEventDetail,
+} from '@ionic/angular';
 import { currencies } from '../models/currencies';
 import { Currency } from '../models/currency';
 import { CurrencySelectionModalComponent } from './currency-selection-modal/currency-selection-modal.component';
@@ -51,8 +55,16 @@ export class CurrencyConvertPage implements OnInit {
     return this.selectedCurrency === currency ? 'medium' : '';
   }
 
-  currencyValueChanged(event: Event) {
-    console.log(event);
+  currencyValueChanged(
+    event: CustomEvent<InputChangeEventDetail>,
+    currency: Currency
+  ) {
+    const value = event.detail.value!;
+    currency.value = Math.round((+value + Number.EPSILON) * 100) / 100;
+  }
+
+  getCurrencyInputLabel(currency: Currency) {
+    return !!currency.value ? currency.currencySymbol : '';
   }
 
   async changeCurrency(currencyCode: string) {
@@ -72,26 +84,23 @@ export class CurrencyConvertPage implements OnInit {
     }
 
     if (!!data.replacementCurrency) {
-      let currency = this.activeCurrencies.find(
-        (c) => c.currencyCode === data.replacementCurrency
-      )!;
-      console.log(this.activeCurrencies);
-      var index = this.activeCurrencies.indexOf(currency);
-      console.log(index);
-      console.log(index);
-      if (index !== -1) {
-        const clCurrency = this.currenciesList.find(
-          (c) => c.countryCode === data.replacementCurrency
-        );
-        const newCurrency = new Currency();
-        newCurrency.currencyCode = clCurrency!.currencyCode;
-        newCurrency.currencyName = clCurrency!.currencyName;
-        newCurrency.currencySymbol = clCurrency!.currencySymbol;
-        newCurrency.countryCode = clCurrency!.countryCode;
-        newCurrency.countryName = clCurrency!.countryName;
-        this.activeCurrencies[index] = newCurrency;
-      }
-      return;
+      this.activeCurrencies = this.activeCurrencies.map((c) => {
+        if (c.currencyCode === data.currencyToReplace) {
+          const clCurrency = this.currenciesList.find(
+            (c) => c.currencyCode === data.replacementCurrency
+          );
+          const newCurrency = new Currency();
+          newCurrency.currencyCode = clCurrency!.currencyCode;
+          newCurrency.currencyName = clCurrency!.currencyName;
+          newCurrency.currencySymbol = clCurrency!.currencySymbol;
+          newCurrency.countryCode = clCurrency!.countryCode;
+          newCurrency.countryName = clCurrency!.countryName;
+          newCurrency.value = c.value;
+          return newCurrency;
+        } else {
+          return c;
+        }
+      });
     }
 
     if (!!data.selectedCurrencies) {
@@ -99,4 +108,6 @@ export class CurrencyConvertPage implements OnInit {
       return;
     }
   }
+
+  updateCurrencyValues() {}
 }

@@ -42,9 +42,10 @@ export class CurrencySelectionModalComponent implements OnInit {
         currency.currencyCode = c.currencyCode;
         currency.currencyName = c.currencyName;
         currency.currencySymbol = c.currencySymbol;
-        currency.isSelected = this.currencySearchResults.find(
-          (cr) => cr.currencyCode === c.currencyCode
-        )!.isSelected;
+        currency.isSelected =
+          this.currencySearchResults.find(
+            (cr) => cr.currencyCode === c.currencyCode
+          )?.isSelected ?? false;
         return currency;
       });
   }

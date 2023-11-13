@@ -4,6 +4,7 @@ export interface ICurrency {
   countryName: string;
   currencySymbol: string;
   currencyName: string;
+  value?: number | null;
 }
 
 export class Currency implements ICurrency {
@@ -12,6 +13,7 @@ export class Currency implements ICurrency {
   countryName!: string;
   currencySymbol!: string;
   currencyName!: string;
+  value?: number | undefined | null;
 
   public get flagPath() {
     return `assets/images/flags/${this.countryCode.toLowerCase()}.svg`;

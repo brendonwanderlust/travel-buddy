@@ -302,8 +302,8 @@ export const currencies = [
   }, // Ethiopia Birr
   {
     currencyCode: 'EUR',
-    countryCode: 'DE',
-    countryName: 'Germany',
+    countryCode: 'EU',
+    countryName: 'Euro Member Countries',
     currencySymbol: '€',
     currencyName: 'Euro',
   }, // Euro Member Countries

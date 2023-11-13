@@ -32,11 +32,14 @@
               class="ion-text-end"
               type="number"
               shape="round"
-              placeholder="0.00"
+              elastic
               inputmode="decimal"
-              [label]="currency.currencySymbol"
+              [placeholder]="currency.currencySymbol + ' ' + '0.00'"
               [clearOnEdit]="true"
-              (ionChange)="currencyValueChanged($event)"
+              [value]="currency.value"
+              [label]="getCurrencyInputLabel(currency)"
+              (ionInput)="currencyValueChanged($event, currency)"
+              (ionChange)="currencyValueChanged($event, currency)"
             ></ion-input>
           </div>
         </div>

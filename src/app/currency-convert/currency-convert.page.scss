@@ -52,9 +52,6 @@ ion-reorder-group {
       }
 
       .currency-input-container {
-        margin-left: auto;
-        display: flex;
-        flex-direction: row;
         align-items: center;
 
         span {
@@ -64,7 +61,6 @@ ion-reorder-group {
         ion-input {
           min-width: 50px;
           max-width: 70px;
-          font-size: 20px;
         }
       }
     }
