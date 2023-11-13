@@ -3,10 +3,12 @@ import {
   ItemReorderEventDetail,
   ModalController,
   InputChangeEventDetail,
+  InputCustomEvent,
 } from '@ionic/angular';
 import { currencies } from '../models/currencies';
 import { Currency } from '../models/currency';
 import { CurrencySelectionModalComponent } from './currency-selection-modal/currency-selection-modal.component';
+import { ExchangeRateService } from '../services/exchange-rate.service';
 
 @Component({
   selector: 'currency-convert',
@@ -16,7 +18,10 @@ import { CurrencySelectionModalComponent } from './currency-selection-modal/curr
 export class CurrencyConvertPage implements OnInit {
   readonly currenciesList: Currency[];
 
-  constructor(private modalCtrl: ModalController) {
+  constructor(
+    private modalCtrl: ModalController,
+    private exchgeRateService: ExchangeRateService
+  ) {
     this.currenciesList = currencies.map((c) => {
       const currency = new Currency();
       currency.countryCode = c.countryCode;
@@ -26,21 +31,33 @@ export class CurrencyConvertPage implements OnInit {
       currency.currencySymbol = c.currencySymbol;
       return currency;
     });
-    this.activeCurrencies = currencies.slice(0, 5).map((c) => {
-      const currency = new Currency();
-      currency.countryCode = c.countryCode;
-      currency.countryName = c.countryName;
-      currency.currencyCode = c.currencyCode;
-      currency.currencyName = c.currencyName;
-      currency.currencySymbol = c.currencySymbol;
-      return currency;
-    });
+    this.activeCurrencies = currencies
+      .filter((c) => ['USD', 'PEN', 'COP'].includes(c.currencyCode))
+      .map((c) => {
+        const currency = new Currency();
+        currency.countryCode = c.countryCode;
+        currency.countryName = c.countryName;
+        currency.currencyCode = c.currencyCode;
+        currency.currencyName = c.currencyName;
+        currency.currencySymbol = c.currencySymbol;
+        return currency;
+      });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.selectedCurrency = this.activeCurrencies[0];
+    this.exchgeRateService
+      .getRates(this.selectedCurrency.currencyCode)
+      .subscribe((res) => {
+        this.exchangeRate = res;
+        this.refreshCurrencyValues();
+      });
+  }
+
   selectedCurrency: any;
   activeCurrencies: Currency[];
   title = 'Convert';
+  exchangeRate: any;
 
   handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
     this.activeCurrencies = ev.detail.complete(this.activeCurrencies);
@@ -55,12 +72,11 @@ export class CurrencyConvertPage implements OnInit {
     return this.selectedCurrency === currency ? 'medium' : '';
   }
 
-  currencyValueChanged(
-    event: CustomEvent<InputChangeEventDetail>,
-    currency: Currency
-  ) {
-    const value = event.detail.value!;
-    currency.value = Math.round((+value + Number.EPSILON) * 100) / 100;
+  currencyValueChanged(event: InputCustomEvent, currency: Currency) {
+    const value = +event.detail.value!;
+    const newValue = !value ? currency.value : value;
+    currency.value = Math.round((newValue! + Number.EPSILON) * 100) / 100;
+    this.refreshCurrencyValues();
   }
 
   getCurrencyInputLabel(currency: Currency) {
@@ -96,11 +112,18 @@ export class CurrencyConvertPage implements OnInit {
           newCurrency.countryCode = clCurrency!.countryCode;
           newCurrency.countryName = clCurrency!.countryName;
           newCurrency.value = c.value;
+          this.selectedCurrency = newCurrency;
           return newCurrency;
         } else {
           return c;
         }
       });
+      this.exchgeRateService
+        .getRates(data.replacementCurrency)
+        .subscribe((res) => {
+          this.exchangeRate = res;
+          this.updateCurrencyValues();
+        });
     }
 
     if (!!data.selectedCurrencies) {
@@ -109,5 +132,31 @@ export class CurrencyConvertPage implements OnInit {
     }
   }
 
-  updateCurrencyValues() {}
+  private refreshCurrencyValues() {
+    if (!this.selectedCurrency || !this.selectedCurrency.value) {
+      return;
+    }
+
+    if (
+      !this.exchangeRate ||
+      this.exchangeRate.base_code !== this.selectedCurrency.currencyCode
+    ) {
+      this.exchgeRateService
+        .getRates(this.selectedCurrency.currencyCode)
+        .subscribe((res) => {
+          this.exchangeRate = res;
+          this.updateCurrencyValues();
+        });
+      return;
+    }
+    this.updateCurrencyValues();
+  }
+
+  private updateCurrencyValues() {
+    this.activeCurrencies.forEach((c) => {
+      c.value =
+        this.selectedCurrency.value *
+        this.exchangeRate.conversion_rates[c.currencyCode];
+    });
+  }
 }

@@ -14,6 +14,10 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { NgModule } from '@angular/core';
 import { RouteReuseStrategy } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { IonicStorageModule } from '@ionic/storage-angular';
+import * as CordovaSQLiteDriver from 'localforage-cordovasqlitedriver';
+import { Drivers } from '@ionic/storage';
 import { environment } from '../environments/environment.prod';
 
 @NgModule({
@@ -27,6 +31,10 @@ import { environment } from '../environments/environment.prod';
     provideAnalytics(() => getAnalytics()),
     provideFirestore(() => getFirestore()),
     provideFunctions(() => getFunctions()),
+    HttpClientModule,
+    IonicStorageModule.forRoot({
+      driverOrder: [CordovaSQLiteDriver._driver, Drivers.IndexedDB],
+    }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
