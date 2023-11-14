@@ -2,12 +2,13 @@ ion-toolbar {
   height: 4rem;
 
   ion-title {
-    padding-top: 1rem;
+    padding-top: 1.2rem;
   }
 }
 
 ion-list {
   background-color: transparent;
+  margin-top: 10px;
 }
 
 ion-reorder-group {
@@ -24,8 +25,6 @@ ion-reorder-group {
 
   .currency-item {
     border-radius: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
 
     .currency-container {
       width: 100%;
@@ -41,8 +40,8 @@ ion-reorder-group {
 
         .flag-img {
           max-width: 40px;
-          margin-top: 1.8rem;
-          margin-bottom: 1.8rem;
+          margin-top: 1.3rem;
+          margin-bottom: 1.3rem;
           margin-right: 1rem;
         }
 
@@ -60,7 +59,7 @@ ion-reorder-group {
 
         ion-input {
           min-width: 50px;
-          max-width: 80px;
+          max-width: 85px;
         }
       }
     }

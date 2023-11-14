@@ -2,13 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import {
   ItemReorderEventDetail,
   ModalController,
-  InputChangeEventDetail,
   InputCustomEvent,
+  ToastController,
 } from '@ionic/angular';
 import { currencies } from '../models/currencies';
 import { Currency } from '../models/currency';
 import { CurrencySelectionModalComponent } from './currency-selection-modal/currency-selection-modal.component';
 import { ExchangeRateService } from '../services/exchange-rate.service';
+import { CachingService } from '../services/caching.service';
+import { round } from 'src/utils/utils';
 
 @Component({
   selector: 'currency-convert',
@@ -16,35 +18,44 @@ import { ExchangeRateService } from '../services/exchange-rate.service';
   styleUrls: ['currency-convert.page.scss'],
 })
 export class CurrencyConvertPage implements OnInit {
-  readonly currenciesList: Currency[];
+  private readonly defaultCodes: string[] = ['USD', 'EUR'];
+  private readonly cacheKey: string = 'CACHED_CURRENCIES';
 
   constructor(
     private modalCtrl: ModalController,
-    private exchgeRateService: ExchangeRateService
-  ) {
-    this.currenciesList = currencies.map((c) => {
-      const currency = new Currency();
-      currency.countryCode = c.countryCode;
-      currency.countryName = c.countryName;
-      currency.currencyCode = c.currencyCode;
-      currency.currencyName = c.currencyName;
-      currency.currencySymbol = c.currencySymbol;
-      return currency;
-    });
-    this.activeCurrencies = currencies
-      .filter((c) => ['USD', 'PEN', 'COP'].includes(c.currencyCode))
-      .map((c) => {
+    private exchgeRateService: ExchangeRateService,
+    private cacheService: CachingService,
+    private toastController: ToastController
+  ) {}
+
+  async ngOnInit() {
+    const cachedCurrencies = await this.cacheService.getCachedRequest(
+      this.cacheKey
+    );
+    if (cachedCurrencies) {
+      this.activeCurrencies = cachedCurrencies.map((c: any) => {
         const currency = new Currency();
         currency.countryCode = c.countryCode;
         currency.countryName = c.countryName;
         currency.currencyCode = c.currencyCode;
         currency.currencyName = c.currencyName;
         currency.currencySymbol = c.currencySymbol;
+        currency.value = c.value;
         return currency;
       });
-  }
-
-  ngOnInit(): void {
+    } else {
+      this.activeCurrencies = currencies
+        .filter((c) => this.defaultCodes.includes(c.currencyCode))
+        .map((c) => {
+          const currency = new Currency();
+          currency.countryCode = c.countryCode;
+          currency.countryName = c.countryName;
+          currency.currencyCode = c.currencyCode;
+          currency.currencyName = c.currencyName;
+          currency.currencySymbol = c.currencySymbol;
+          return currency;
+        });
+    }
     this.selectedCurrency = this.activeCurrencies[0];
     this.exchgeRateService
       .getRates(this.selectedCurrency.currencyCode)
@@ -55,35 +66,11 @@ export class CurrencyConvertPage implements OnInit {
   }
 
   selectedCurrency: any;
-  activeCurrencies: Currency[];
+  activeCurrencies!: Currency[];
   title = 'Convert';
   exchangeRate: any;
 
-  handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
-    this.activeCurrencies = ev.detail.complete(this.activeCurrencies);
-    // save countries list to userSettings
-  }
-
-  onCurrencyItemClicked(currency: any) {
-    this.selectedCurrency = currency;
-  }
-
-  getColor(currency: any): string {
-    return this.selectedCurrency === currency ? 'medium' : '';
-  }
-
-  currencyValueChanged(event: InputCustomEvent, currency: Currency) {
-    const value = +event.detail.value!;
-    const newValue = !value ? currency.value : value;
-    currency.value = Math.round((newValue! + Number.EPSILON) * 100) / 100;
-    this.refreshCurrencyValues();
-  }
-
-  getCurrencyInputLabel(currency: Currency) {
-    return !!currency.value ? currency.currencySymbol : '';
-  }
-
-  async changeCurrency(currencyCode: string) {
+  async changeCurrency(currencyCode?: string) {
     const modal = await this.modalCtrl.create({
       component: CurrencySelectionModalComponent,
       componentProps: {
@@ -102,7 +89,7 @@ export class CurrencyConvertPage implements OnInit {
     if (!!data.replacementCurrency) {
       this.activeCurrencies = this.activeCurrencies.map((c) => {
         if (c.currencyCode === data.currencyToReplace) {
-          const clCurrency = this.currenciesList.find(
+          const clCurrency = currencies.find(
             (c) => c.currencyCode === data.replacementCurrency
           );
           const newCurrency = new Currency();
@@ -127,13 +114,89 @@ export class CurrencyConvertPage implements OnInit {
     }
 
     if (!!data.selectedCurrencies) {
-      console.log(data.selectedCurrencies);
+      const toRemove = this.activeCurrencies.filter(
+        (c) => !data.selectedCurrencies.includes(c.currencyCode)
+      );
+      toRemove.forEach((c) => {
+        var index = this.activeCurrencies.findIndex(
+          (ac) => ac.currencyCode == c.currencyCode
+        );
+        this.activeCurrencies.splice(index, 1);
+      });
+      const toAdd = data.selectedCurrencies.filter((currencyCode: string) => {
+        var index = this.activeCurrencies.findIndex(
+          (ac) => ac.currencyCode === currencyCode
+        );
+        return index === -1;
+      });
+      toAdd.forEach((currencyCode: string) => {
+        const clCurrency = currencies.find(
+          (c) => c.currencyCode === currencyCode
+        );
+        const newCurrency = new Currency();
+        newCurrency.currencyCode = clCurrency!.currencyCode;
+        newCurrency.currencyName = clCurrency!.currencyName;
+        newCurrency.currencySymbol = clCurrency!.currencySymbol;
+        newCurrency.countryCode = clCurrency!.countryCode;
+        newCurrency.countryName = clCurrency!.countryName;
+        this.activeCurrencies.push(newCurrency);
+      });
+      if (
+        !this.activeCurrencies
+          .map((c) => c.countryCode)
+          .includes(this.selectedCurrency.currencyCode)
+      ) {
+        this.selectedCurrency = this.activeCurrencies[0];
+      }
+      this.updateCurrencyValues();
       return;
     }
   }
 
+  async removeCurrency(currency: Currency) {
+    if (this.activeCurrencies.length <= 2) {
+      const toast = await this.toastController.create({
+        message: 'You must have a minimum of two currencies',
+        duration: 2500,
+        position: 'bottom',
+        color: 'warning',
+        icon: 'warning',
+      });
+
+      await toast.present();
+      return;
+    }
+    this.activeCurrencies = this.activeCurrencies.filter(
+      (c) => c.currencyCode !== currency.currencyCode
+    );
+  }
+
+  onCurrencyItemClicked(currency: any) {
+    this.selectedCurrency = currency;
+  }
+
+  getColor(currency: any): string {
+    return this.selectedCurrency === currency ? 'medium' : '';
+  }
+
+  handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
+    this.activeCurrencies = ev.detail.complete(this.activeCurrencies);
+    this.cacheCurrencies();
+  }
+
+  currencyValueChanged(event: InputCustomEvent, currency: Currency) {
+    const value = +event.detail.value!;
+    currency.value = !value ? null : round(value, 2);
+    this.selectedCurrency = currency;
+    this.refreshCurrencyValues();
+  }
+
+  getCurrencyInputLabel(currency: Currency) {
+    return (currency.value ?? 0) > 0 ? currency.currencySymbol : '';
+  }
+
   private refreshCurrencyValues() {
-    if (!this.selectedCurrency || !this.selectedCurrency.value) {
+    if (!this.selectedCurrency) {
       return;
     }
 
@@ -154,9 +217,18 @@ export class CurrencyConvertPage implements OnInit {
 
   private updateCurrencyValues() {
     this.activeCurrencies.forEach((c) => {
-      c.value =
-        this.selectedCurrency.value *
-        this.exchangeRate.conversion_rates[c.currencyCode];
+      c.value = !this.selectedCurrency.value
+        ? null
+        : round(
+            this.selectedCurrency.value *
+              this.exchangeRate.conversion_rates[c.currencyCode],
+            2
+          );
     });
+    this.cacheCurrencies();
+  }
+
+  private cacheCurrencies() {
+    this.cacheService.cacheRequest(this.cacheKey, this.activeCurrencies);
   }
 }

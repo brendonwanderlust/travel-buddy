@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { currencies } from 'src/app/models/currencies';
 import { Currency } from 'src/app/models/currency';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'currency-selection-modal',
@@ -9,15 +10,20 @@ import { Currency } from 'src/app/models/currency';
   styleUrls: ['./currency-selection-modal.component.scss'],
 })
 export class CurrencySelectionModalComponent implements OnInit {
-  constructor(private modalCtrl: ModalController) {}
+  constructor(
+    private modalCtrl: ModalController,
+    private toastController: ToastController
+  ) {}
 
   @Input() currencyToReplace!: string;
   @Input() activeCurrencies!: string[];
 
-  currencySearchResults!: ModalCurrency[];
+  isToastOpen = false;
+  currencies!: ModalCurrency[];
+  filteredSearchResults!: ModalCurrency[];
 
   ngOnInit(): void {
-    this.currencySearchResults = [
+    this.currencies = [
       ...currencies.map((c) => {
         const currency = new ModalCurrency();
         currency.countryCode = c.countryCode;
@@ -29,11 +35,12 @@ export class CurrencySelectionModalComponent implements OnInit {
         return currency;
       }),
     ];
+    this.filteredSearchResults = [...this.currencies];
   }
 
   handleInput(event: any) {
     const query = event.target.value.toLowerCase();
-    this.currencySearchResults = currencies
+    this.filteredSearchResults = this.currencies
       .filter((c) => c.currencyName.toLowerCase().indexOf(query) > -1)
       .map((c) => {
         const currency = new ModalCurrency();
@@ -43,18 +50,21 @@ export class CurrencySelectionModalComponent implements OnInit {
         currency.currencyName = c.currencyName;
         currency.currencySymbol = c.currencySymbol;
         currency.isSelected =
-          this.currencySearchResults.find(
-            (cr) => cr.currencyCode === c.currencyCode
-          )?.isSelected ?? false;
+          this.currencies.find((cr) => cr.currencyCode === c.currencyCode)
+            ?.isSelected ?? false;
         return currency;
       });
   }
 
-  onCurrencyItemClicked(currency: ModalCurrency) {
+  async onCurrencyItemClicked(currency: ModalCurrency) {
     if (!!this.currencyToReplace) {
-      // check if at least two currencies are selected
-      this.confirm(currency);
+      await this.confirm(currency);
       return;
+    } else {
+      currency.isSelected = !currency.isSelected;
+      this.currencies.find(
+        (c) => c.currencyCode === currency.currencyCode
+      )!.isSelected = currency.isSelected;
     }
   }
 
@@ -62,7 +72,7 @@ export class CurrencySelectionModalComponent implements OnInit {
     return this.modalCtrl.dismiss(null, 'cancel');
   }
 
-  confirm(currency?: ModalCurrency) {
+  async confirm(currency?: ModalCurrency) {
     if (!!currency) {
       return this.modalCtrl.dismiss(
         {
@@ -71,16 +81,33 @@ export class CurrencySelectionModalComponent implements OnInit {
         },
         'confirm'
       );
-    } else {
-      return this.modalCtrl.dismiss(
-        {
-          selectedCurrencies: this.currencySearchResults
-            .filter((r) => r.isSelected)
-            .map((r) => r.currencyCode),
-        },
-        'confirm'
-      );
     }
+
+    if (this.currencies.filter((c) => c.isSelected).length < 2) {
+      const toast = await this.toastController.create({
+        message: 'You must have a minimum of two currencies',
+        duration: 2500,
+        position: 'bottom',
+        color: 'warning',
+        icon: 'warning',
+      });
+
+      await toast.present();
+      return;
+    }
+
+    return this.modalCtrl.dismiss(
+      {
+        selectedCurrencies: this.currencies
+          .filter((r) => r.isSelected)
+          .map((r) => r.currencyCode),
+      },
+      'confirm'
+    );
+  }
+
+  setOpen(isOpen: boolean) {
+    this.isToastOpen = isOpen;
   }
 }
 

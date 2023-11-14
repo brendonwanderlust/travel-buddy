@@ -17,7 +17,7 @@
 
   <ion-list>
     <ion-item
-      *ngFor="let currencyResult of currencySearchResults"
+      *ngFor="let currencyResult of filteredSearchResults"
       (click)="onCurrencyItemClicked(currencyResult)"
     >
       <ion-img [src]="currencyResult.flagPath" class="flag-img"></ion-img>

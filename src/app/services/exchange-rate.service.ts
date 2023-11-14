@@ -22,10 +22,10 @@ export class ExchangeRateService {
     });
   }
 
+  // https://app.exchangerate-api.com/
   getRates(currencyCode: string, forceRefresh = false): Observable<any> {
     const url = `https://v6.exchangerate-api.com/v6/${environment.exchangeRateAPIKey}/latest/${currencyCode}`;
 
-    // Handle offline case
     if (!this.connected) {
       this.toastController
         .create({
@@ -38,20 +38,15 @@ export class ExchangeRateService {
       return from(this.cachingService.getCachedRequest(url));
     }
 
-    // Handle connected case
     if (forceRefresh) {
-      // Make a new API call
       return this.callAndCache(url);
     } else {
-      // Check if we have cached data
       const storedValue = from(this.cachingService.getCachedRequest(url));
       return storedValue.pipe(
         switchMap((result) => {
           if (!result) {
-            // Perform a new request since we have no data
             return this.callAndCache(url);
           } else {
-            // Return cached data
             return of(result);
           }
         })
@@ -62,7 +57,6 @@ export class ExchangeRateService {
   private callAndCache(url: string): Observable<any> {
     return this.http.get(url).pipe(
       tap((res) => {
-        // Store our new data
         this.cachingService.cacheRequest(url, res);
       })
     );

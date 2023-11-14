@@ -6,46 +6,61 @@
 <ion-content [fullscreen]="true" class="currencies-content">
   <ion-list>
     <ion-reorder-group
+      *ngIf="activeCurrencies"
       [disabled]="false"
       (ionItemReorder)="handleReorder($any($event))"
     >
-      <ion-item
-        *ngFor="let currency of activeCurrencies"
-        class="currency-item"
-        [color]="getColor(currency)"
-        (click)="onCurrencyItemClicked(currency)"
-      >
-        <div class="currency-container">
-          <div class="currency-info-container">
-            <ion-img [src]="currency.flagPath" class="flag-img"></ion-img>
-            <span class="currency-code font-size"
-              >{{ currency.currencyCode }}</span
-            >
-            <ion-icon
-              name="chevron-down-outline"
-              class="font-size"
-              (click)="changeCurrency(currency.currencyCode)"
-            ></ion-icon>
+      <ion-item-sliding *ngFor="let currency of activeCurrencies"
+        ><ion-item
+          class="currency-item"
+          [color]="getColor(currency)"
+          (click)="onCurrencyItemClicked(currency)"
+        >
+          <div class="currency-container">
+            <div class="currency-info-container">
+              <ion-img [src]="currency.flagPath" class="flag-img"></ion-img>
+              <span class="currency-code font-size"
+                >{{ currency.currencyCode }}</span
+              >
+              <ion-icon
+                name="chevron-down-outline"
+                class="font-size"
+                (click)="changeCurrency(currency.currencyCode)"
+              ></ion-icon>
+            </div>
+            <div class="currency-input-container">
+              <ion-input
+                class="ion-text-end"
+                type="number"
+                shape="round"
+                elastic
+                inputmode="decimal"
+                [placeholder]="currency.currencySymbol + ' ' + '0.00'"
+                [clearOnEdit]="true"
+                [value]="currency.value"
+                [label]="getCurrencyInputLabel(currency)"
+                (ionChange)="currencyValueChanged($event, currency)"
+              ></ion-input>
+            </div>
           </div>
-          <div class="currency-input-container">
-            <ion-input
-              class="ion-text-end"
-              type="number"
-              shape="round"
-              elastic
-              inputmode="decimal"
-              [placeholder]="currency.currencySymbol + ' ' + '0.00'"
-              [clearOnEdit]="true"
-              [value]="currency.value"
-              [label]="getCurrencyInputLabel(currency)"
-              (ionChange)="currencyValueChanged($event, currency)"
-            ></ion-input>
-          </div>
-        </div>
-        <ion-reorder slot="end"></ion-reorder>
-      </ion-item>
+          <ion-reorder slot="end"></ion-reorder> </ion-item
+        ><ion-item-options side="end">
+          <ion-item-option color="danger" (click)="removeCurrency(currency)"
+            ><ion-icon slot="icon-only" name="trash"></ion-icon
+          ></ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
     </ion-reorder-group>
   </ion-list>
-  <!-- // add "Add currency" button and exchange rate attributions
-  //https://www.exchangerate-api.com/docs/free -->
+
+  <ion-fab
+    slot="fixed"
+    vertical="bottom"
+    horizontal="end"
+    (click)="changeCurrency()"
+  >
+    <ion-fab-button>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
