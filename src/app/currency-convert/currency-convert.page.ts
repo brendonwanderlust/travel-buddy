@@ -20,6 +20,7 @@ import { round } from 'src/utils/utils';
 export class CurrencyConvertPage implements OnInit {
   private readonly defaultCodes: string[] = ['USD', 'EUR'];
   private readonly cacheKey: string = 'CACHED_CURRENCIES';
+  readonly title = 'Convert';
 
   constructor(
     private modalCtrl: ModalController,
@@ -67,7 +68,6 @@ export class CurrencyConvertPage implements OnInit {
 
   selectedCurrency: any;
   activeCurrencies!: Currency[];
-  title = 'Convert';
   exchangeRate: any;
 
   async changeCurrency(currencyCode?: string) {

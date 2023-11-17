@@ -5,22 +5,60 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-list></ion-list>
-  <ion-fab
-    slot="fixed"
-    vertical="bottom"
-    horizontal="end"
-    (click)="log($event)"
-  >
-    <ion-fab-button>
+  <ion-list
+    ><ion-item *ngFor="let conversion of conversions">
+      <div class="ci-container">
+        <div class="ci-detail-container">
+          <div class="ci-left">
+            <p>From</p>
+            <p>kg</p>
+          </div>
+          <div class="ci-right">
+            <ion-input
+              [(ngModel)]="conversion.value"
+              placeholder="Enter value"
+            ></ion-input>
+            <p>Kilogram</p>
+            <ion-icon
+              name="chevron-down-outline"
+              class="font-size"
+              (click)="log(conversion)"
+            ></ion-icon>
+          </div>
+        </div>
+        <div class="ci-detail-container">
+          <div class="ci-left">
+            <p>To</p>
+            <p>lb</p>
+          </div>
+          <div class="ci-right">
+            <ion-input
+              [(ngModel)]="conversion.convertedValue"
+              placeholder="Converted value"
+            ></ion-input>
+            <p>
+              Pound
+              <ion-icon
+                name="chevron-down-outline"
+                class="font-size"
+                (click)="log(conversion)"
+              ></ion-icon>
+            </p>
+          </div>
+        </div>
+      </div> </ion-item
+  ></ion-list>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button size="large">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
-    <ion-fab-list side="start">
-      <ion-fab-button>
-        <ion-icon name="chevron-back"></ion-icon>
-      </ion-fab-button>
-      <ion-fab-button>
-        <ion-icon name="chevron-back"></ion-icon>
+    <ion-fab-list side="top">
+      <ion-fab-button
+        *ngFor="let type of uomTypes"
+        size="large"
+        (click)="addConversionItem(type)"
+      >
+        <ion-icon [name]="type.icon">{{type.name}}</ion-icon>
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
