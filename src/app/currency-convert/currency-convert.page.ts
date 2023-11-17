@@ -173,10 +173,27 @@ export class CurrencyConvertPage implements OnInit {
 
   onCurrencyItemClicked(currency: any) {
     this.selectedCurrency = currency;
+    this.refreshCurrencyValues();
+    this.getCurrencyHelper(currency);
+  }
+
+  getCurrencyHelper(currency: Currency) {
+    if (
+      !currency ||
+      !this.exchangeRate ||
+      !currency.value ||
+      this.selectedCurrency.currencyCode === currency.currencyCode
+    ) {
+      return null;
+    }
+    return `1 ${this.selectedCurrency.currencyCode} = ${round(
+      this.exchangeRate.conversion_rates[currency.currencyCode],
+      4
+    )} ${currency.currencyCode}`;
   }
 
   getColor(currency: any): string {
-    return this.selectedCurrency === currency ? 'medium' : '';
+    return this.selectedCurrency === currency ? 'light' : '';
   }
 
   handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {

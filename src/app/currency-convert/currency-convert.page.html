@@ -38,6 +38,7 @@
                 [placeholder]="currency.currencySymbol + ' ' + '0.00'"
                 [clearOnEdit]="true"
                 [value]="currency.value"
+                [helperText]="getCurrencyHelper(currency)"
                 [label]="getCurrencyInputLabel(currency)"
                 (ionChange)="currencyValueChanged($event, currency)"
               ></ion-input>
