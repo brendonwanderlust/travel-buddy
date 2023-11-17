@@ -15,9 +15,11 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'tab2',
+        path: 'unit-convert',
         loadChildren: () =>
-          import('../tab2/tab2.module').then((m) => m.Tab2PageModule),
+          import('../unit-convert/unit-convert.module').then(
+            (m) => m.UnitConvertPageModule
+          ),
       },
       {
         path: 'tab3',
