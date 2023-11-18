@@ -20,7 +20,7 @@ import { round } from 'src/utils/utils';
 export class CurrencyConvertPage implements OnInit {
   private readonly defaultCodes: string[] = ['USD', 'EUR'];
   private readonly cacheKey: string = 'CACHED_CURRENCIES';
-  readonly title = 'Convert';
+  readonly title = 'Convert Currencies';
 
   constructor(
     private modalCtrl: ModalController,

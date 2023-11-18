@@ -32,7 +32,7 @@ export class UnitConvertPage {
         this.uomList.push({
           type: unitType.type,
           name: key,
-          symbol: Object.values(unitType.units)[index],
+          symbol: Object.values(unitType.units)[index] as string,
         });
       });
     });
