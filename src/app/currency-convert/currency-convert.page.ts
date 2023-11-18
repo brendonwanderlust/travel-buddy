@@ -5,7 +5,7 @@ import {
   InputCustomEvent,
   ToastController,
 } from '@ionic/angular';
-import { currencies } from '../models/currencies';
+import { currencies } from '../data/currencies';
 import { Currency } from '../models/currency';
 import { CurrencySelectionModalComponent } from './currency-selection-modal/currency-selection-modal.component';
 import { ExchangeRateService } from '../services/exchange-rate.service';
@@ -20,7 +20,7 @@ import { round } from 'src/utils/utils';
 export class CurrencyConvertPage implements OnInit {
   private readonly defaultCodes: string[] = ['USD', 'EUR'];
   private readonly cacheKey: string = 'CACHED_CURRENCIES';
-  readonly title = 'Convert';
+  readonly title = 'Convert Currencies';
 
   constructor(
     private modalCtrl: ModalController,
