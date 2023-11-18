@@ -11,54 +11,76 @@
         <div class="ci-detail-container">
           <div class="ci-left">
             <p>From</p>
-            <p>kg</p>
+            <p>{{conversion.unitTop?.symbol}}</p>
           </div>
           <div class="ci-right">
             <ion-input
-              [(ngModel)]="conversion.value"
+              type="number"
+              class="ion-text-end"
               placeholder="Enter value"
+              [value]="conversion.unitTop?.value"
+              (ionChange)="topValueChanged($event, conversion)"
             ></ion-input>
-            <p>Kilogram</p>
-            <ion-icon
-              name="chevron-down-outline"
-              class="font-size"
-              (click)="log(conversion)"
-            ></ion-icon>
+
+            <ion-select
+              aria-label="Unit of Measure"
+              justify="end"
+              interface="action-sheet"
+              placeholder="Select Unit"
+              [value]="conversion.unitTop?.name"
+              (ionChange)="onTopUnitChanged($event, conversion)"
+            >
+              <ion-select-option
+                *ngFor="let unit of conversion.units"
+                [value]="unit.name"
+                >{{unit.name}}</ion-select-option
+              >
+            </ion-select>
           </div>
         </div>
         <div class="ci-detail-container">
           <div class="ci-left">
             <p>To</p>
-            <p>lb</p>
+            <p>{{conversion.unitBottom?.symbol}}</p>
           </div>
           <div class="ci-right">
             <ion-input
-              [(ngModel)]="conversion.convertedValue"
-              placeholder="Converted value"
+              type="number"
+              class="ion-text-end"
+              placeholder="Enter value"
+              [value]="conversion.unitBottom?.value"
+              (ionChange)="bottomValueChanged($event, conversion)"
             ></ion-input>
-            <p>
-              Pound
-              <ion-icon
-                name="chevron-down-outline"
-                class="font-size"
-                (click)="log(conversion)"
-              ></ion-icon>
-            </p>
+            <ion-select
+              aria-label="Unit of Measure"
+              justify="end"
+              interface="action-sheet"
+              placeholder="Select Unit"
+              [value]="conversion.unitBottom?.name"
+              (ionChange)="onBottomUnitChanged($event, conversion)"
+            >
+              <ion-select-option
+                *ngFor="let unit of conversion.units"
+                [value]="unit.name"
+                >{{unit.name}}</ion-select-option
+              >
+            </ion-select>
           </div>
         </div>
-      </div> </ion-item
-  ></ion-list>
+      </div>
+    </ion-item></ion-list
+  >
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button size="large">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
       <ion-fab-button
-        *ngFor="let type of uomTypes"
+        *ngFor="let type of unitTypes"
         size="large"
         (click)="addConversionItem(type)"
       >
-        <ion-icon [name]="type.icon">{{type.name}}</ion-icon>
+        <ion-icon [name]="type.icon"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>

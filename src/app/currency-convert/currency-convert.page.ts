@@ -5,7 +5,7 @@ import {
   InputCustomEvent,
   ToastController,
 } from '@ionic/angular';
-import { currencies } from '../models/currencies';
+import { currencies } from '../data/currencies';
 import { Currency } from '../models/currency';
 import { CurrencySelectionModalComponent } from './currency-selection-modal/currency-selection-modal.component';
 import { ExchangeRateService } from '../services/exchange-rate.service';

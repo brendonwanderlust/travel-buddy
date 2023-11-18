@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { currencies } from 'src/app/models/currencies';
+import { currencies } from 'src/app/data/currencies';
 import { Currency } from 'src/app/models/currency';
 import { ToastController } from '@ionic/angular';
 
