@@ -18,4 +18,8 @@ export class UnitsComponent {
     { type: UNIT_TYPE.LENGTH, units: Length, icon: 'resize-outline' },
     { type: UNIT_TYPE.TEMPERATURE, units: Temperature, icon: 'thermometer' },
   ];
+
+  onUnitTypeClicked(unitType: UnitType) {
+    console.log(unitType);
+  }
 }
