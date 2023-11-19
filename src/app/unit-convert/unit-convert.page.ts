@@ -12,6 +12,12 @@ import {
   Temperature,
   UNIT_TYPE,
 } from 'any-unit-converter/lib/interface';
+import {
+  UnitType,
+  IUnitOfMeasure,
+  ConvertibleItem,
+  UnitOfMeasure,
+} from '../models/units';
 
 @Component({
   selector: 'unit-convert',
@@ -32,7 +38,7 @@ export class UnitConvertPage {
         this.uomList.push({
           type: unitType.type,
           name: key,
-          symbol: Object.values(unitType.units)[index] as string,
+          symbol: Object.values(unitType.units)[index],
         });
       });
     });
@@ -61,8 +67,13 @@ export class UnitConvertPage {
 
     unitTop.value = item.unitTop?.value;
     item.unitTop = unitTop;
-    this.log(item.unitTop);
-    this.log(item);
+    this.performConversion(
+      'bottom',
+      item,
+      item.unitTop.symbol,
+      item.unitBottom?.symbol,
+      unitTop.value
+    );
   }
 
   onBottomUnitChanged(
@@ -75,8 +86,13 @@ export class UnitConvertPage {
 
     unitBottom.value = item.unitBottom?.value;
     item.unitBottom = unitBottom;
-    this.log(item.unitBottom);
-    this.log(item);
+    this.performConversion(
+      'top',
+      item,
+      item.unitBottom.symbol,
+      item.unitTop?.symbol,
+      unitBottom.value
+    );
   }
 
   topValueChanged(
@@ -89,73 +105,72 @@ export class UnitConvertPage {
     } else {
       item.unitTop = { value: value } as UnitOfMeasure;
     }
-    if (item.unitBottom) {
-      item.unitBottom.value = item.unitTop.value
-        ? Number(
-            uc.convert(
-              item.unitTop.value,
-              Mass.Gram,
-              Mass.Pound,
-              UNIT_TYPE.MASS
-            )
-          )
-        : undefined;
-    }
+    this.performConversion(
+      'bottom',
+      item,
+      item.unitTop.symbol,
+      item.unitBottom?.symbol,
+      value
+    );
   }
 
   bottomValueChanged(
     $event: IonInputCustomEvent<InputChangeEventDetail>,
     item: ConvertibleItem
-  ) {
+  ): void {
     const value = $event.detail.value ? Number($event.detail.value) : undefined;
     if (item.unitBottom) {
       item.unitBottom.value = value;
     } else {
       item.unitBottom = { value: value } as UnitOfMeasure;
     }
+    this.performConversion(
+      'top',
+      item,
+      item.unitBottom.symbol,
+      item.unitTop?.symbol,
+      value
+    );
   }
 
-  log(e: any) {
-    console.log(e);
+  performConversion(
+    conversionLocation: 'top' | 'bottom',
+    item: ConvertibleItem,
+    from?: Mass | Length | Temperature,
+    to?: Mass | Length | Temperature,
+    value?: number
+  ) {
+    if (
+      !item.unitTop ||
+      !item.unitBottom ||
+      value === undefined ||
+      value === null ||
+      !from ||
+      !to
+    ) {
+      return;
+    }
+
+    const convertedValue = uc.convert(value, from, to, item.type);
+    if (conversionLocation === 'top') {
+      item.unitTop.value = +convertedValue;
+    } else {
+      item.unitBottom.value = +convertedValue;
+    }
   }
-}
 
-interface UnitType {
-  type: UNIT_TYPE;
-  units: typeof Mass | typeof Length | typeof Temperature;
-  icon: string;
+  // getUnit(unitType: UNIT_TYPE, symbol: string): Mass | Length | Temperature {
+  //   switch (unitType) {
+  //     default:
+  //       {
+  //         console.log(
+  //           Mass[Object.values(Mass).findIndex((value) => value === symbol)]
+  //         );
+  //       }
+  //       return;
+  //   }
+  // }
 }
-
-interface IUnitOfMeasure {
-  type: UNIT_TYPE;
-  name: string;
-  symbol: string;
-  value?: number;
-}
-
-class UnitOfMeasure implements IUnitOfMeasure {
-  type!: UNIT_TYPE;
-  name!: string;
-  symbol!: string;
-  value?: number;
-}
-
-interface IConvertibleItem {
-  id: string;
-  type: UNIT_TYPE;
-  units: IUnitOfMeasure[];
-  unitTop?: IUnitOfMeasure;
-  unitBottom?: IUnitOfMeasure;
-}
-
-class ConvertibleItem implements IConvertibleItem {
-  id!: string;
-  type!: UNIT_TYPE;
-  units: IUnitOfMeasure[] = [];
-  unitTop?: IUnitOfMeasure;
-  unitBottom?: IUnitOfMeasure;
-}
-
 // { type: 'volume', name: 'Volume', icon: 'flask-outline' }, // beaker-outline
 // { type: 'time', name: 'Time', icon: 'time-outline' },
 // { type: 'current', name: 'Current', icon: 'flash-outline' },

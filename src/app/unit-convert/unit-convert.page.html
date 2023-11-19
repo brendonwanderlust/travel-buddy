@@ -18,6 +18,7 @@
               type="number"
               class="ion-text-end"
               placeholder="Enter value"
+              [clearOnEdit]="true"
               [value]="conversion.unitTop?.value"
               (ionChange)="topValueChanged($event, conversion)"
             ></ion-input>
@@ -48,6 +49,7 @@
               type="number"
               class="ion-text-end"
               placeholder="Enter value"
+              [clearOnEdit]="true"
               [value]="conversion.unitBottom?.value"
               (ionChange)="bottomValueChanged($event, conversion)"
             ></ion-input>
