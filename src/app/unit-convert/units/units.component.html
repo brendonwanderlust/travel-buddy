@@ -1,0 +1,11 @@
+<ion-content [fullscreen]="true">
+  <ion-card *ngFor="let unitType of unitTypes">
+    <ion-card-header>
+      <ion-card-title>{{ unitType.type }}</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-icon [name]="unitType.icon" size="large"></ion-icon>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
