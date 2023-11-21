@@ -1,24 +1,22 @@
 import { Component } from '@angular/core';
+import * as ConvertUnits from 'convert-units';
+import { UnitConversionService } from '../services/unit-conversion.service';
 import { SelectChangeEventDetail } from '@ionic/angular';
 import {
   InputChangeEventDetail,
   IonInputCustomEvent,
   IonSelectCustomEvent,
 } from '@ionic/core';
-import uc from 'any-unit-converter';
-import * as ConvertUnits from 'convert-units';
 import {
-  Length,
-  Mass,
-  Temperature,
-  UNIT_TYPE,
-} from 'any-unit-converter/lib/interface';
-import {
-  IUnitType,
   IUnitOfMeasure,
-  ConvertibleItem,
-  UnitOfMeasure,
-} from '../models/units-OLD';
+  IUnitTypeItem,
+  UnitType,
+  getUOMName,
+  getUnitType,
+  getUnitTypeIcon,
+  getUnitTypeName,
+  getUnitTypeString,
+} from '../models/units';
 
 @Component({
   selector: 'unit-convert',
@@ -27,160 +25,75 @@ import {
 })
 export class UnitConvertPage {
   readonly title = 'Convert Units';
-  readonly unitTypes: IUnitType[] = [
-    {
-      type: UNIT_TYPE.MASS,
-      units: Mass,
-      name: 'Mass',
-      icon: 'barbell-outline',
-    },
-    {
-      type: UNIT_TYPE.LENGTH,
-      units: Length,
-      name: 'Length',
-      icon: 'resize-outline',
-    },
-    {
-      type: UNIT_TYPE.TEMPERATURE,
-      units: Temperature,
-      name: 'Temperature',
-      icon: 'thermometer',
-    },
-  ];
 
-  constructor() {
-    this.unitTypes.forEach((unitType) => {
-      Object.keys(unitType.units).forEach((key, index) => {
-        this.uomList.push({
-          type: unitType.type,
-          name: key,
-          symbol: Object.values(unitType.units)[index],
-        });
-      });
-    });
-    this.selectedUnitType = this.unitTypes[0];
-    this.selectedUnitTop = this.uomList.filter(
-      (uom) => uom.type === this.selectedUnitType.type
-    )[0];
-    this.selectedUnitBottom = this.uomList.filter(
-      (uom) => uom.type === this.selectedUnitType.type
-    )[1];
-    this.selectedUnitUnitOptions = this.uomList.filter(
-      (uom) => uom.type === this.selectedUnitType.type
-    );
-    console.log(new ConvertUnits.default(1).measures());
-    console.log(new ConvertUnits.default(1).possibilities());
-    console.log(new ConvertUnits.default(1).list());
-    console.log(new ConvertUnits.default(1).describe('kg'));
+  constructor(private unitConversionService: UnitConversionService) {
+    this.init();
   }
 
+  topToBottom: boolean = false;
+  unitTypes!: IUnitTypeItem[];
   uomList: IUnitOfMeasure[] = [];
-
-  selectedUnitType: IUnitType;
-  selectedUnitTop: IUnitOfMeasure;
-  selectedUnitBottom: IUnitOfMeasure;
-  selectedUnitUnitOptions: IUnitOfMeasure[];
+  selectedUnitType!: IUnitTypeItem;
+  selectedUnitTop!: IUnitOfMeasure;
+  selectedUnitBottom!: IUnitOfMeasure;
 
   onTopUnitChanged(
-    ev: IonSelectCustomEvent<SelectChangeEventDetail<ConvertibleItem>>,
+    ev: IonSelectCustomEvent<SelectChangeEventDetail<any>>,
     item: IUnitOfMeasure
   ) {
     const unitTop = {
-      ...this.uomList.find((u) => u.name === ev.target.value),
-    } as UnitOfMeasure;
-
-    // unitTop.value = item.unitTop?.value;
-    // item.unitTop = unitTop;
-    // this.performConversion(
-    //   'bottom',
-    //   item,
-    //   item.unitTop.symbol,
-    //   item.unitBottom?.symbol,
-    //   unitTop.value
-    // );
+      ...this.uomList.find((u) => u.abbr === ev.target.value),
+    } as IUnitOfMeasure;
+    unitTop.value = item.value;
+    this.selectedUnitTop = unitTop;
+    this.selectedUnitBottom.value = this.unitConversionService.convert(
+      unitTop.value,
+      this.selectedUnitTop.abbr,
+      this.selectedUnitBottom.abbr,
+      this.selectedUnitType.type
+    );
   }
 
   onBottomUnitChanged(
-    ev: IonSelectCustomEvent<SelectChangeEventDetail<ConvertibleItem>>,
+    ev: IonSelectCustomEvent<SelectChangeEventDetail<any>>,
     item: IUnitOfMeasure
   ) {
     const unitBottom = {
-      ...this.uomList.find((u) => u.name === ev.target.value),
-    } as UnitOfMeasure;
+      ...this.uomList.find((u) => u.abbr === ev.target.value),
+    } as IUnitOfMeasure;
 
     unitBottom.value = item?.value;
-    // item.unitBottom = unitBottom;
-    // this.performConversion(
-    //   'top',
-    //   item,
-    //   item.unitBottom.symbol,
-    //   item.unitTop?.symbol,
-    //   unitBottom.value
-    // );
+    this.selectedUnitBottom = unitBottom;
+    this.selectedUnitTop.value = this.unitConversionService.convert(
+      unitBottom.value,
+      this.selectedUnitBottom.abbr,
+      this.selectedUnitTop.abbr,
+      this.selectedUnitType.type
+    );
   }
 
-  topValueChanged(
-    $event: IonInputCustomEvent<InputChangeEventDetail>,
-    item: IUnitOfMeasure
-  ) {
-    // const value = $event.detail.value ? Number($event.detail.value) : undefined;
-    // if (item.unitTop) {
-    //   item.unitTop.value = value;
-    // } else {
-    //   item.unitTop = { value: value } as UnitOfMeasure;
-    // }
-    // this.performConversion(
-    //   'bottom',
-    //   item,
-    //   item.unitTop.symbol,
-    //   item.unitBottom?.symbol,
-    //   value
-    // );
+  topValueChanged($event: IonInputCustomEvent<InputChangeEventDetail>) {
+    const value = $event.detail.value ? Number($event.detail.value) : undefined;
+    this.selectedUnitTop.value = value;
+    this.selectedUnitBottom.value = this.unitConversionService.convert(
+      value,
+      this.selectedUnitTop.abbr,
+      this.selectedUnitBottom.abbr,
+      this.selectedUnitType.type
+    );
   }
 
   bottomValueChanged(
-    $event: IonInputCustomEvent<InputChangeEventDetail>,
-    item: IUnitOfMeasure
+    $event: IonInputCustomEvent<InputChangeEventDetail>
   ): void {
-    // const value = $event.detail.value ? Number($event.detail.value) : undefined;
-    // if (item.unitBottom) {
-    //   item.unitBottom.value = value;
-    // } else {
-    //   item.unitBottom = { value: value } as UnitOfMeasure;
-    // }
-    // this.performConversion(
-    //   'top',
-    //   item,
-    //   item.unitBottom.symbol,
-    //   item.unitTop?.symbol,
-    //   value
-    // );
-  }
-
-  performConversion(
-    conversionLocation: 'top' | 'bottom',
-    item: ConvertibleItem,
-    from?: Mass | Length | Temperature,
-    to?: Mass | Length | Temperature,
-    value?: number
-  ) {
-    if (
-      !item.unitTop ||
-      !item.unitBottom ||
-      value === undefined ||
-      value === null ||
-      !from ||
-      !to
-    ) {
-      return;
-    }
-
-    const convertedValue = uc.convert(value, from, to, item.type);
-    if (conversionLocation === 'top') {
-      item.unitTop.value = +convertedValue;
-    } else {
-      item.unitBottom.value = +convertedValue;
-    }
+    const value = $event.detail.value ? Number($event.detail.value) : undefined;
+    this.selectedUnitBottom.value = value;
+    this.selectedUnitTop.value = this.unitConversionService.convert(
+      value,
+      this.selectedUnitBottom.abbr,
+      this.selectedUnitTop.abbr,
+      this.selectedUnitType.type
+    );
   }
 
   onUnitTypeChanged(event: IonSelectCustomEvent<SelectChangeEventDetail<any>>) {
@@ -193,23 +106,37 @@ export class UnitConvertPage {
     this.selectedUnitBottom = this.uomList.filter(
       (uom) => uom.type === this.selectedUnitType.type
     )[1];
-    this.selectedUnitUnitOptions = this.uomList.filter(
-      (uom) => uom.type === this.selectedUnitType.type
-    );
   }
-  // getUnit(unitType: UNIT_TYPE, symbol: string): Mass | Length | Temperature {
-  //   switch (unitType) {
-  //     default:
-  //       {
-  //         console.log(
-  //           Mass[Object.values(Mass).findIndex((value) => value === symbol)]
-  //         );
-  //       }
-  //       return;
-  //   }
-  // }
+
+  private init() {
+    this.unitTypes = Object.values(UnitType)
+      .filter((v) => isNaN(Number(v)))
+      .map((key) => {
+        const unitType = getUnitType(key as string);
+        const uoms = new ConvertUnits.default()
+          .possibilities(getUnitTypeString(unitType))
+          .map((p: string) => {
+            const uom = new ConvertUnits.default().describe(
+              p
+            ) as IUnitOfMeasure;
+            uom.type = unitType;
+            uom.name = getUOMName(uom.plural, uom.type);
+            return uom;
+          });
+        this.uomList.push(...uoms);
+        return {
+          icon: getUnitTypeIcon(unitType),
+          name: getUnitTypeName(unitType),
+          type: unitType,
+          uoms: uoms,
+        } as IUnitTypeItem;
+      });
+    this.selectedUnitType = this.unitTypes[0];
+    this.selectedUnitTop = this.uomList.filter(
+      (uom) => uom.type === this.selectedUnitType.type
+    )[0];
+    this.selectedUnitBottom = this.uomList.filter(
+      (uom) => uom.type === this.selectedUnitType.type
+    )[1];
+  }
 }
-// { type: 'volume', name: 'Volume', icon: 'flask-outline' }, // beaker-outline
-// { type: 'time', name: 'Time', icon: 'time-outline' },
-// { type: 'current', name: 'Current', icon: 'flash-outline' },
-// { type: 'speed', name: 'Speed', icon: 'speedometer' },

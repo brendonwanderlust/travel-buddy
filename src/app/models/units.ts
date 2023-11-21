@@ -1,24 +1,31 @@
+import { TravelBuddyError } from './exceptions';
+
 export enum MeasurementSystem {
   Imperial = 'imperial',
   Metric = 'metric',
 }
 
 export enum UnitType {
+  Area,
   Length,
   Mass,
   Speed,
   Temperature,
+  Time,
+  Volume,
 }
 
-export interface IUnitType {
+export interface IUnitTypeItem {
   icon: string;
   name: string;
+  type: UnitType;
   uoms: IUnitOfMeasure[] | undefined;
 }
 
 export interface IUnitOfMeasure {
   type: UnitType;
   abbr: string;
+  name: string;
   system: MeasurementSystem | string;
   measure: string;
   singular: string;
@@ -27,23 +34,50 @@ export interface IUnitOfMeasure {
   value: number | undefined;
 }
 
+export function getUOMName(plural: string, unitType: UnitType): string {
+  if (unitType !== UnitType.Temperature) {
+    return plural;
+  }
+
+  switch (plural) {
+    case 'degrees Celsius':
+      return 'Celsius';
+    case 'degrees Kelvin':
+      return 'Kelvin';
+    case 'degrees Fahrenheit':
+      return 'Fahrenheit';
+    case 'degrees Rankine':
+      return 'Rankine';
+    default:
+      throw new TravelBuddyError('Plural Name Not Defined');
+  }
+}
+
 export function getUnitType(measure: string): UnitType {
   switch (measure) {
-    case 'Length':
+    case 'Area' || 'area':
+      return UnitType.Area;
+    case 'Length' || 'length':
       return UnitType.Length;
-    case 'mass':
+    case 'Mass' || 'mass':
       return UnitType.Mass;
-    case 'speed':
+    case 'Speed' || 'speed':
       return UnitType.Speed;
-    case 'temperature':
+    case 'Temperature' || 'temperature':
       return UnitType.Temperature;
+    case 'Volume' || 'volume':
+      return UnitType.Volume;
+    case 'Time' || 'time':
+      return UnitType.Time;
     default:
-      throw 'Unit Type Not Defined';
+      throw new TravelBuddyError('Unit Type Not Defined');
   }
 }
 
 export function getUnitTypeIcon(unitType: UnitType): string {
   switch (unitType) {
+    case UnitType.Area:
+      return 'crop-outline';
     case UnitType.Length:
       return 'resize-outline';
     case UnitType.Mass:
@@ -52,13 +86,19 @@ export function getUnitTypeIcon(unitType: UnitType): string {
       return 'speedometer';
     case UnitType.Temperature:
       return 'thermometer';
+    case UnitType.Volume:
+      return 'flask-outline';
+    case UnitType.Time:
+      return 'time-outline';
     default:
-      return '';
+      throw new TravelBuddyError('Unit Type Not Defined');
   }
 }
 
 export function getUnitTypeName(unitType: UnitType): string {
   switch (unitType) {
+    case UnitType.Area:
+      return 'Area';
     case UnitType.Length:
       return 'Length';
     case UnitType.Mass:
@@ -67,13 +107,19 @@ export function getUnitTypeName(unitType: UnitType): string {
       return 'Speed';
     case UnitType.Temperature:
       return 'Temperature';
+    case UnitType.Volume:
+      return 'Volume';
+    case UnitType.Time:
+      return 'Time';
     default:
-      return '';
+      throw new TravelBuddyError('Unit Type Not Defined');
   }
 }
 
 export function getUnitTypeString(unitType: UnitType): string {
   switch (unitType) {
+    case UnitType.Area:
+      return 'area';
     case UnitType.Length:
       return 'length';
     case UnitType.Mass:
@@ -82,7 +128,11 @@ export function getUnitTypeString(unitType: UnitType): string {
       return 'speed';
     case UnitType.Temperature:
       return 'temperature';
+    case UnitType.Volume:
+      return 'volume';
+    case UnitType.Time:
+      return 'time';
     default:
-      return '';
+      throw new TravelBuddyError('Unit Type Not Defined');
   }
 }

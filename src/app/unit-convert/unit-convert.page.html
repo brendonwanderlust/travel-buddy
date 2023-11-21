@@ -7,7 +7,7 @@
   <ion-card>
     <ion-card-header>
       <ion-button>
-        <!-- <ion-icon [name]="selectedUnitType.icon" size="large"></ion-icon> -->
+        <ion-icon [name]="selectedUnitType.icon" size="large"></ion-icon>
         <ion-select
           interface="action-sheet"
           aria-label="Unit Type"
@@ -26,14 +26,14 @@
     <ion-card-content>
       <div class="ci-container">
         <div class="ci-detail-container">
-          <!-- <div class="ci-right"> -->
           <ion-input
             type="number"
             class="ion-text-end"
             placeholder="Enter value"
             [clearOnEdit]="true"
             [value]="selectedUnitTop.value"
-            (ionChange)="topValueChanged($event, selectedUnitTop)"
+            (ionFocus)="topToBottom=true"
+            (ionChange)="topValueChanged($event)"
           ></ion-input>
 
           <ion-select
@@ -41,126 +41,44 @@
             justify="end"
             interface="action-sheet"
             placeholder="Select Unit"
-            [value]="selectedUnitTop.name"
+            [value]="selectedUnitTop.abbr"
+            (ionFocus)="topToBottom=true"
             (ionChange)="onTopUnitChanged($event, selectedUnitTop)"
           >
             <ion-select-option
-              *ngFor="let unitOption of selectedUnitUnitOptions"
-              [value]="unitOption.name"
-              >{{unitOption.name}}</ion-select-option
+              *ngFor="let uom of selectedUnitType.uoms"
+              [value]="uom.abbr"
+              >{{uom.name}}</ion-select-option
             >
           </ion-select>
-          <!-- </div>-->
         </div>
         <div class="ci-detail-container">
-          <!-- <div class="ci-right"> -->
           <ion-input
             type="number"
             class="ion-text-end"
             placeholder="Enter value"
             [clearOnEdit]="true"
             [value]="selectedUnitBottom.value"
-            (ionChange)="bottomValueChanged($event, selectedUnitBottom)"
+            (ionFocus)="topToBottom=false"
+            (ionChange)="bottomValueChanged($event)"
           ></ion-input>
           <ion-select
             aria-label="Unit of Measure"
             justify="end"
             interface="action-sheet"
             placeholder="Select Unit"
-            [value]="selectedUnitBottom.symbol"
+            [value]="selectedUnitBottom.abbr"
+            (ionFocus)="topToBottom=false"
             (ionChange)="onBottomUnitChanged($event, selectedUnitBottom)"
           >
             <ion-select-option
-              *ngFor="let unitOption of selectedUnitUnitOptions"
-              [value]="unitOption.symbol"
-              >{{unitOption.name}}</ion-select-option
+              *ngFor="let uom of selectedUnitType.uoms"
+              [value]="uom.abbr"
+              >{{uom.name}}</ion-select-option
             >
           </ion-select>
-          <!-- </div> -->
         </div>
       </div>
     </ion-card-content>
   </ion-card>
-
-  <!-- <ion-list
-    ><ion-item *ngFor="let conversion of conversions">
-      <div class="ci-container">
-        <div class="ci-detail-container">
-          <div class="ci-left">
-            <p>From</p>
-            <p>{{conversion.unitTop?.symbol}}</p>
-          </div>
-          <div class="ci-right">
-            <ion-input
-              type="number"
-              class="ion-text-end"
-              placeholder="Enter value"
-              [clearOnEdit]="true"
-              [value]="conversion.unitTop?.value"
-              (ionChange)="topValueChanged($event, conversion)"
-            ></ion-input>
-
-            <ion-select
-              aria-label="Unit of Measure"
-              justify="end"
-              interface="action-sheet"
-              placeholder="Select Unit"
-              [value]="conversion.unitTop?.name"
-              (ionChange)="onTopUnitChanged($event, conversion)"
-            >
-              <ion-select-option
-                *ngFor="let unit of conversion.units"
-                [value]="unit.name"
-                >{{unit.name}}</ion-select-option
-              >
-            </ion-select>
-          </div>
-        </div>
-        <div class="ci-detail-container">
-          <div class="ci-left">
-            <p>To</p>
-            <p>{{conversion.unitBottom?.symbol}}</p>
-          </div>
-          <div class="ci-right">
-            <ion-input
-              type="number"
-              class="ion-text-end"
-              placeholder="Enter value"
-              [clearOnEdit]="true"
-              [value]="conversion.unitBottom?.value"
-              (ionChange)="bottomValueChanged($event, conversion)"
-            ></ion-input>
-            <ion-select
-              aria-label="Unit of Measure"
-              justify="end"
-              interface="action-sheet"
-              placeholder="Select Unit"
-              [value]="conversion.unitBottom?.name"
-              (ionChange)="onBottomUnitChanged($event, conversion)"
-            >
-              <ion-select-option
-                *ngFor="let unit of conversion.units"
-                [value]="unit.name"
-                >{{unit.name}}</ion-select-option
-              >
-            </ion-select>
-          </div>
-        </div>
-      </div>
-    </ion-item></ion-list
-  > -->
-  <!-- <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button size="large">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-list side="top">
-      <ion-fab-button
-        *ngFor="let type of unitTypes"
-        size="large"
-        (click)="addConversionItem(type)"
-      >
-        <ion-icon [name]="type.icon"></ion-icon>
-      </ion-fab-button>
-    </ion-fab-list>
-  </ion-fab> -->
 </ion-content>

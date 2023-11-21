@@ -6,7 +6,6 @@ import { UnitConvertPage } from './unit-convert.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 import { UnitConvertPageRoutingModule } from './unit-convert-routing.module';
-import { UnitsComponent } from './units/units.component';
 
 @NgModule({
   imports: [
@@ -16,6 +15,6 @@ import { UnitsComponent } from './units/units.component';
     ExploreContainerComponentModule,
     UnitConvertPageRoutingModule,
   ],
-  declarations: [UnitConvertPage, UnitsComponent],
+  declarations: [UnitConvertPage],
 })
 export class UnitConvertPageModule {}
