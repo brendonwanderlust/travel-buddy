@@ -5,7 +5,7 @@ import {
   Temperature,
   UNIT_TYPE,
 } from 'any-unit-converter/lib/interface';
-import { UnitType } from 'src/app/models/units';
+import { IUnitType } from 'src/app/models/units-OLD';
 
 @Component({
   selector: 'units',
@@ -19,7 +19,7 @@ export class UnitsComponent {
   //   { type: UNIT_TYPE.TEMPERATURE, units: Temperature, icon: 'thermometer' },
   // ];
 
-  onUnitTypeClicked(unitType: UnitType) {
+  onUnitTypeClicked(unitType: IUnitType) {
     console.log(unitType);
   }
 }

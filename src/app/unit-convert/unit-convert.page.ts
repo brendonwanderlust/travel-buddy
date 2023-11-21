@@ -6,6 +6,7 @@ import {
   IonSelectCustomEvent,
 } from '@ionic/core';
 import uc from 'any-unit-converter';
+import * as ConvertUnits from 'convert-units';
 import {
   Length,
   Mass,
@@ -13,11 +14,11 @@ import {
   UNIT_TYPE,
 } from 'any-unit-converter/lib/interface';
 import {
-  UnitType,
+  IUnitType,
   IUnitOfMeasure,
   ConvertibleItem,
   UnitOfMeasure,
-} from '../models/units';
+} from '../models/units-OLD';
 
 @Component({
   selector: 'unit-convert',
@@ -26,7 +27,7 @@ import {
 })
 export class UnitConvertPage {
   readonly title = 'Convert Units';
-  readonly unitTypes: UnitType[] = [
+  readonly unitTypes: IUnitType[] = [
     {
       type: UNIT_TYPE.MASS,
       units: Mass,
@@ -67,11 +68,15 @@ export class UnitConvertPage {
     this.selectedUnitUnitOptions = this.uomList.filter(
       (uom) => uom.type === this.selectedUnitType.type
     );
+    console.log(new ConvertUnits.default(1).measures());
+    console.log(new ConvertUnits.default(1).possibilities());
+    console.log(new ConvertUnits.default(1).list());
+    console.log(new ConvertUnits.default(1).describe('kg'));
   }
 
   uomList: IUnitOfMeasure[] = [];
 
-  selectedUnitType: UnitType;
+  selectedUnitType: IUnitType;
   selectedUnitTop: IUnitOfMeasure;
   selectedUnitBottom: IUnitOfMeasure;
   selectedUnitUnitOptions: IUnitOfMeasure[];
