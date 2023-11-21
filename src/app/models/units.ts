@@ -7,6 +7,7 @@ import {
 
 export interface UnitType {
   type: UNIT_TYPE;
+  name: string;
   units: typeof Mass | typeof Length | typeof Temperature;
   icon: string;
 }

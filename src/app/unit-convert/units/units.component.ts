@@ -13,11 +13,11 @@ import { UnitType } from 'src/app/models/units';
   styleUrls: ['./units.component.scss'],
 })
 export class UnitsComponent {
-  readonly unitTypes: UnitType[] = [
-    { type: UNIT_TYPE.MASS, units: Mass, icon: 'barbell-outline' },
-    { type: UNIT_TYPE.LENGTH, units: Length, icon: 'resize-outline' },
-    { type: UNIT_TYPE.TEMPERATURE, units: Temperature, icon: 'thermometer' },
-  ];
+  // readonly unitTypes: UnitType[] = [
+  //   { type: UNIT_TYPE.MASS, units: Mass,  icon: 'barbell-outline' },
+  //   { type: UNIT_TYPE.LENGTH, units: Length, icon: 'resize-outline' },
+  //   { type: UNIT_TYPE.TEMPERATURE, units: Temperature, icon: 'thermometer' },
+  // ];
 
   onUnitTypeClicked(unitType: UnitType) {
     console.log(unitType);
