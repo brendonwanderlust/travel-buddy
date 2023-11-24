@@ -34,23 +34,33 @@ export interface IUnitOfMeasure {
   value: number | undefined;
 }
 
+// This logic fixes the names in the 'convert-units' package
 export function getUOMName(plural: string, unitType: UnitType): string {
-  if (unitType !== UnitType.Temperature) {
-    return plural;
+  if (unitType === UnitType.Temperature) {
+    switch (plural) {
+      case 'degrees Celsius':
+        return 'Celsius';
+      case 'degrees Kelvin':
+        return 'Kelvin';
+      case 'degrees Fahrenheit':
+        return 'Fahrenheit';
+      case 'degrees Rankine':
+        return 'Rankine';
+      default:
+        throw new TravelBuddyError('Plural Name Not Defined');
+    }
   }
 
-  switch (plural) {
-    case 'degrees Celsius':
-      return 'Celsius';
-    case 'degrees Kelvin':
-      return 'Kelvin';
-    case 'degrees Fahrenheit':
-      return 'Fahrenheit';
-    case 'degrees Rankine':
-      return 'Rankine';
-    default:
-      throw new TravelBuddyError('Plural Name Not Defined');
+  if (unitType === UnitType.Area) {
+    switch (plural) {
+      case 'Centimeters':
+        return 'Square Centimeters';
+      default:
+        return plural;
+    }
   }
+
+  return plural;
 }
 
 export function getUnitType(measure: string): UnitType {

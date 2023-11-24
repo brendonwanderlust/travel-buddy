@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import * as ConvertUnits from 'convert-units';
 import { UnitConversionService } from '../services/unit-conversion.service';
-import { SelectChangeEventDetail } from '@ionic/angular';
+import { SelectChangeEventDetail, ToastController } from '@ionic/angular';
 import {
   InputChangeEventDetail,
   IonInputCustomEvent,
@@ -26,74 +26,96 @@ import {
 export class UnitConvertPage {
   readonly title = 'Convert Units';
 
-  constructor(private unitConversionService: UnitConversionService) {
+  constructor(
+    private unitConversionService: UnitConversionService,
+    private toastController: ToastController
+  ) {
     this.init();
   }
 
-  topToBottom: boolean = false;
   unitTypes!: IUnitTypeItem[];
   uomList: IUnitOfMeasure[] = [];
   selectedUnitType!: IUnitTypeItem;
   selectedUnitTop!: IUnitOfMeasure;
   selectedUnitBottom!: IUnitOfMeasure;
 
-  onTopUnitChanged(
+  async onTopUnitChanged(
     ev: IonSelectCustomEvent<SelectChangeEventDetail<any>>,
     item: IUnitOfMeasure
   ) {
-    const unitTop = {
-      ...this.uomList.find((u) => u.abbr === ev.target.value),
-    } as IUnitOfMeasure;
-    unitTop.value = item.value;
-    this.selectedUnitTop = unitTop;
-    this.selectedUnitBottom.value = this.unitConversionService.convert(
-      unitTop.value,
-      this.selectedUnitTop.abbr,
-      this.selectedUnitBottom.abbr,
-      this.selectedUnitType.type
-    );
+    try {
+      const unitTop = {
+        ...this.uomList.find((u) => u.abbr === ev.target.value),
+      } as IUnitOfMeasure;
+      unitTop.value = item.value;
+      this.selectedUnitTop = unitTop;
+      this.selectedUnitBottom.value = this.unitConversionService.convert(
+        unitTop.value,
+        this.selectedUnitTop.abbr,
+        this.selectedUnitBottom.abbr,
+        this.selectedUnitType.type
+      );
+    } catch (error) {
+      await this.presentErrorToast();
+    }
   }
 
-  onBottomUnitChanged(
+  async onBottomUnitChanged(
     ev: IonSelectCustomEvent<SelectChangeEventDetail<any>>,
     item: IUnitOfMeasure
   ) {
-    const unitBottom = {
-      ...this.uomList.find((u) => u.abbr === ev.target.value),
-    } as IUnitOfMeasure;
+    try {
+      const unitBottom = {
+        ...this.uomList.find((u) => u.abbr === ev.target.value),
+      } as IUnitOfMeasure;
 
-    unitBottom.value = item?.value;
-    this.selectedUnitBottom = unitBottom;
-    this.selectedUnitTop.value = this.unitConversionService.convert(
-      unitBottom.value,
-      this.selectedUnitBottom.abbr,
-      this.selectedUnitTop.abbr,
-      this.selectedUnitType.type
-    );
+      unitBottom.value = item?.value;
+      this.selectedUnitBottom = unitBottom;
+      this.selectedUnitTop.value = this.unitConversionService.convert(
+        unitBottom.value,
+        this.selectedUnitBottom.abbr,
+        this.selectedUnitTop.abbr,
+        this.selectedUnitType.type
+      );
+    } catch (error) {
+      await this.presentErrorToast();
+    }
   }
 
-  topValueChanged($event: IonInputCustomEvent<InputChangeEventDetail>) {
-    const value = $event.detail.value ? Number($event.detail.value) : undefined;
-    this.selectedUnitTop.value = value;
-    this.selectedUnitBottom.value = this.unitConversionService.convert(
-      value,
-      this.selectedUnitTop.abbr,
-      this.selectedUnitBottom.abbr,
-      this.selectedUnitType.type
-    );
+  async topValueChanged($event: IonInputCustomEvent<InputChangeEventDetail>) {
+    try {
+      const value = $event.detail.value
+        ? Number($event.detail.value)
+        : undefined;
+      this.selectedUnitTop.value = value;
+      this.selectedUnitBottom.value = this.unitConversionService.convert(
+        value,
+        this.selectedUnitTop.abbr,
+        this.selectedUnitBottom.abbr,
+        this.selectedUnitType.type
+      );
+    } catch (error) {
+      await this.presentErrorToast();
+    }
   }
 
-  bottomValueChanged(
+  async bottomValueChanged(
     $event: IonInputCustomEvent<InputChangeEventDetail>
-  ): void {
-    const value = $event.detail.value ? Number($event.detail.value) : undefined;
-    this.selectedUnitBottom.value = value;
-    this.selectedUnitTop.value = this.unitConversionService.convert(
-      value,
-      this.selectedUnitBottom.abbr,
-      this.selectedUnitTop.abbr,
-      this.selectedUnitType.type
-    );
+  ) {
+    try {
+      const value = $event.detail.value
+        ? Number($event.detail.value)
+        : undefined;
+      this.selectedUnitBottom.value = value;
+      this.selectedUnitTop.value = this.unitConversionService.convert(
+        value,
+        this.selectedUnitBottom.abbr,
+        this.selectedUnitTop.abbr,
+        this.selectedUnitType.type
+      );
+    } catch (error) {
+      await this.presentErrorToast();
+    }
   }
 
   onUnitTypeChanged(event: IonSelectCustomEvent<SelectChangeEventDetail<any>>) {
@@ -138,5 +160,17 @@ export class UnitConvertPage {
     this.selectedUnitBottom = this.uomList.filter(
       (uom) => uom.type === this.selectedUnitType.type
     )[1];
+  }
+
+  private async presentErrorToast() {
+    const toast = await this.toastController.create({
+      message: 'We apologize but there appears to be an error',
+      duration: 2500,
+      position: 'bottom',
+      color: 'danger',
+      icon: 'warning',
+    });
+
+    await toast.present();
   }
 }

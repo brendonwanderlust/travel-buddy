@@ -169,6 +169,7 @@ export class CurrencyConvertPage implements OnInit {
     this.activeCurrencies = this.activeCurrencies.filter(
       (c) => c.currencyCode !== currency.currencyCode
     );
+    this.cacheCurrencies();
   }
 
   onCurrencyItemClicked(currency: any) {
